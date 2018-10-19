@@ -16,11 +16,49 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         //createData()
-        retrieveData()
+        //retrieveData()
+        updateData()
     }
 
 
     //MARK: Initilizers
+    
+    func updateData()
+    {
+        /*
+         For update record first we have to fetch/Retrieve data with predicate as same as above Retrieve data process. Then below few steps to follow
+         
+         Prepare the request with predicate for the entity (User in our example)
+         Fetch record and Set New value with key
+         And Last Save context same as create data.
+         */
+        
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+        
+        //Creating context
+        let managedContext = appDelegate.persistentContainer.viewContext
+        
+        //fetch request
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>.init(entityName: "Person")
+        fetchRequest.predicate = NSPredicate.init(format: "age = 2")
+        
+        do {
+            let persons = try managedContext.fetch(fetchRequest)
+            
+            let fetchedPerson = persons.last as! NSManagedObject
+            fetchedPerson.setValue("Piyush", forKey: "name")
+            
+            do{
+                try managedContext.save()
+            }
+            catch let error as NSError{
+                print("Unable to update data due to \(error.userInfo)")
+            }
+            
+        } catch let error as NSError{
+            print("Unable to fetch data due to \(error.userInfo)")
+        }
+    }
     
     func retrieveData()
     {
