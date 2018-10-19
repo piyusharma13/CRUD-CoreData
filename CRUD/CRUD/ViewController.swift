@@ -15,11 +15,46 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        createData()
+        //createData()
+        retrieveData()
     }
 
 
     //MARK: Initilizers
+    
+    func retrieveData()
+    {
+        /*
+         The process of fetching the saved data is very easy as well. It has the following task
+         
+         1. Prepare the request of type NSFetchRequest for the entity (User in our example)
+         2. if required use predicate for filter data
+         3. Fetch the result from context in the form of array of [NSManagedObject]
+         4. Iterate through an array to get value for the specific key
+         */
+        
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+
+        //Creating context
+        let managedContext = appDelegate.persistentContainer.viewContext
+        
+        //fetch request
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>.init(entityName: "Person")
+//        fetchRequest.fetchLimit = 100
+//        fetchRequest.predicate = NSPredicate.init(format: "age = 2")
+        fetchRequest.sortDescriptors = [NSSortDescriptor.init(key: "age", ascending: false)]
+        
+        do {
+            let persons = try managedContext.fetch(fetchRequest)
+            
+            for person in persons as! [NSManagedObject] {
+                print(person.value(forKey:"name") as! String)
+            }
+        } catch  {
+            print("Failure")
+        }
+    }
+    
 
     func createData()
     {
