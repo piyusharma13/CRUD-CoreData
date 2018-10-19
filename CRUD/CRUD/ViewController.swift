@@ -17,11 +17,50 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view, typically from a nib.
         //createData()
         //retrieveData()
-        updateData()
+        //updateData()
+        //deleteData()
     }
 
 
     //MARK: Initilizers
+    
+    func deleteData()
+    {
+        /*
+         For delete record first we have to find object which we want to delete by fetchRequest. then follow below few steps for delete record
+         
+         1. Prepare the request with predicate for the entity (User in our example)
+         2. Fetch record and which we want to delete
+         3. And make context.delete(object) call
+         */
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+        
+        //Creating context
+        let managedContext = appDelegate.persistentContainer.viewContext
+        
+        //fetch request
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>.init(entityName: "Person")
+        fetchRequest.predicate = NSPredicate.init(format: "age = 1")
+        
+        do {
+            let persons = try managedContext.fetch(fetchRequest)
+            
+            let fetchedPerson = persons.last as! NSManagedObject
+
+            managedContext.delete(fetchedPerson)
+            
+            do{
+                try managedContext.save()
+            }
+            catch let error as NSError{
+                print("Unable to delete data due to \(error.userInfo)")
+            }
+            
+        } catch let error as NSError{
+            print("Unable to fetch data due to \(error.userInfo)")
+        }
+        
+    }
     
     func updateData()
     {
